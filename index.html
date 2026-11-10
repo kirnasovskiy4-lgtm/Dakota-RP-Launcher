@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dakota RP Launcher</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-orange: #ff7f00;
+      --glow-orange: rgba(255, 127, 0, 0.7);
+      --bg-dark-opacity: rgba(10, 10, 12, 0.85);
+      --card-bg: rgba(20, 20, 25, 0.9);
+      --text-color: #ffffff;
+      --accent-red: #e50914;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      outline: none;
+    }
+
+    body {
+      font-family: 'Montserrat', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: #000;
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Модель мобільного екрана */
+    .app-container {
+      width: 100%;
+      max-width: 420px;
+      height: 100vh;
+      max-height: 880px;
+      background-image: url('https://images.unsplash.com/photo-1558981806-ec527fa84c39?q=80&w=1000&auto=format&fit=crop'); 
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+      overflow: hidden;
+      border: 1px solid rgba(255, 127, 0, 0.3);
+      border-radius: 5px;
+    }
+
+    /* Шар затемнення */
+    .app-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-dark-opacity);
+      z-index: 1;
+    }
+
+    .app-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    /* Оновлена шапка з логотипом */
+    .header {
+      padding: 15px 15px 12px;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(8px);
+      border-bottom: 2px solid var(--primary-orange);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* SVG версія логотипа "D" з футболки */
+    .logo-badge {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 3px solid var(--accent-red);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 15px rgba(229, 9, 20, 0.8), 0 0 25px rgba(255, 127, 0, 0.5);
+      animation: logoGlow 2s infinite alternate ease-in-out;
+    }
+
+    .logo-badge svg {
+      width: 30px;
+      height: 30px;
+    }
+
+    .logo-title-text {
+      font-size: 26px;
+      font-weight: 900;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .logo-title-text span {
+      color: var(--primary-orange);
+    }
+
+    /* Соціальні мережі */
+    .social-banner {
+      margin: 15px;
+      padding: 14px;
+      background: var(--card-bg);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 127, 0, 0.4);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+      animation: bannerPulseGlow 3s infinite alternate;
+    }
+
+    .social-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--text-color);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      opacity: 0.9;
+    }
+
+    .social-item i {
+      font-size: 24px;
+      margin-bottom: 5px;
+      color: var(--primary-orange);
+      transition: all 0.3s ease;
+      text-shadow: 0 0 10px var(--glow-orange);
+    }
+
+    .social-item:hover {
+      transform: translateY(-3px);
+      color: var(--primary-orange);
+      opacity: 1;
+    }
+
+    .social-item:hover i {
+      transform: scale(1.2);
+    }
+
+    /* Контент вкладок */
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 15px 90px;
+    }
+
+    .content-area::-webkit-scrollbar {
+      width: 4px;
+    }
+    .content-area::-webkit-scrollbar-thumb {
+      background-color: var(--primary-orange);
+      border-radius: 2px;
+    }
+
+    .tab-content {
+      display: none;
+      animation: tabFadeIn 0.4s ease forwards;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Картки серверів */
+    .server-card {
+      background: var(--card-bg);
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    }
+
+    .server-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 100%;
+      background: var(--primary-orange);
+      box-shadow: 0 0 15px var(--glow-orange);
+    }
+
+    .server-card:hover {
+      transform: translateY(-2px) scale(1.01);
+      border-color: rgba(255, 127, 0, 0.6);
+      box-shadow: 0 8px 25px rgba(255, 127, 0, 0.25);
+    }
+
+    .server-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .server-title {
+      font-size: 19px;
+      font-weight: 800;
+    }
+
+    .online-badge {
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(0, 255, 100, 0.12);
+      color: #00ff64;
+      padding: 4px 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(0, 255, 100, 0.5);
+    }
+
+    .server-info {
+      font-size: 13px;
+      color: #b0b0b0;
+      margin-bottom: 14px;
+      font-family: monospace;
+    }
+
+    .btn-connect {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #ff7f00, #ff5500);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-weight: 800;
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(255, 85, 0, 0.5);
+      transition: all 0.3s ease;
+    }
+
+    .btn-connect:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    /* Навігаційне меню */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 75px;
+      background: rgba(10, 10, 12, 0.95);
+      backdrop-filter: blur(10px);
+      border-top: 2px solid var(--primary-orange);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #888;
+      background: none;
+      border: none;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      width: 30%;
+      height: 100%;
+      justify-content: center;
+    }
+
+    .nav-item i {
+      font-size: 22px;
+      margin-bottom: 4px;
+      transition: all 0.3s ease;
+    }
+
+    .nav-item.active {
+      color: var(--primary-orange);
+    }
+
+    .nav-item.active i {
+      transform: translateY(-4px);
+      text-shadow: 0 0 15px var(--glow-orange);
+    }
+
+    .nav-item::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 3px;
+      background-color: var(--primary-orange);
+      border-radius: 3px 3px 0 0;
+      transition: width 0.3s ease;
+    }
+
+    .nav-item.active::after {
+      width: 40%;
+    }
+
+    /* Анімації */
+    @keyframes logoGlow {
+      from { box-shadow: 0 0 12px rgba(229, 9, 20, 0.7); }
+      to { box-shadow: 0 0 22px rgba(229, 9, 20, 1), 0 0 30px rgba(255, 127, 0, 0.8); }
+    }
+
+    @keyframes tabFadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes bannerPulseGlow {
+      0% { border-color: rgba(255, 127, 0, 0.4); }
+      100% { border-color: rgba(255, 127, 0, 0.8); }
+    }
+
+    .placeholder-content {
+      background: var(--card-bg);
+      border-radius: 18px;
+      padding: 25px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      text-align: center;
+    }
+
+    .placeholder-content i {
+      font-size: 45px;
+      color: var(--primary-orange);
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <div class="app-overlay"></div>
+    
+    <div class="app-content">
+      
+      <!-- Оновлена шапка з логотипом DAKOTA RP -->
+      <div class="header">
+        <div class="logo-container">
+          <!-- Логотип "D" з майки -->
+          <div class="logo-badge">
+            <svg viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="42" stroke="#e50914" stroke-width="10" fill="none" />
+              <path d="M 35 25 L 55 25 C 70 25 70 75 55 75 L 35 75 Z" fill="#e50914" />
+              <polygon points="50,15 85,50 65,50" fill="#111" />
+            </svg>
+          </div>
+          <div class="logo-title-text">DAKOTA <span>RP</span></div>
+        </div>
+      </div>
+
+      <!-- Баннер соціальних мереж -->
+      <div class="social-banner">
+        <a href="https://t.me/+rGdQ8ui9egg1YWYy" target="_blank" class="social-item">
+          <i class="fab fa-telegram-plane"></i>
+          <span>Телеграм</span>
+        </a>
+        <a href="https://instagram.com/your_instagram" target="_blank" class="social-item">
+          <i class="fab fa-instagram"></i>
+          <span>Інстаграм</span>
+        </a>
+        <a href="https://dakota-rp-com.samp.date" target="_blank" class="social-item">
+          <i class="fas fa-comments"></i>
+          <span>Форум</span>
+        </a>
+      </div>
+
+      <!-- Контент -->
+      <div class="content-area">
+        
+        <!-- Вкладка: Сервера -->
+        <div id="tab-servers" class="tab-content active">
+          
+          <div class="server-card">
+            <div class="server-header">
+              <span class="server-title">Dakota RP | Київ | Mobile SAMP</span>
+              <span class="online-badge">0/500</span>
+            </div>
+            <div class="server-info">IP: 188.127.241.74:3015</div>
+            <button class="btn-connect" onclick="connectServer('samp://185.220.10.15:7777')">ГРАТИ</button>
+          </div>
+
+          <div class="server-card">
+            <div class="server-header">
+              <span class="server-title">Dakota RP | Вінниця | Mobile SAMP</span>
+              <span class="online-badge">0/500</span>
+            </div>
+            <div class="server-info">IP: 185.220.10.16:7777</div>
+            <button class="btn-connect" onclick="connectServer('samp://185.220.10.16:7777')">ГРАТИ</button>
+          </div>
+
+        </div>
+
+        <!-- Вкладка: Інтерфейс -->
+        <div id="tab-interface" class="tab-content">
+          <div class="placeholder-content">
+            <i class="fas fa-desktop"></i>
+            <h3 style="margin-bottom: 8px; color: var(--primary-orange);">Кастомізація UI</h3>
+            <p style="font-size: 13px; color: #aaa;">Налаштування спидометра, прицілу та HUD-інтерфейсу.</p>
+          </div>
+        </div>
+
+        <!-- Вкладка: Настройки -->
+        <div id="tab-settings" class="tab-content">
+          <div class="placeholder-content">
+            <i class="fas fa-sliders-h"></i>
+            <h3 style="margin-bottom: 8px; color: var(--primary-orange);">Налаштування</h3>
+            <p style="font-size: 13px; color: #aaa;">Зміна нікнейму, графіки або очищення кешу.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Нижня панель навігації -->
+      <div class="bottom-nav">
+        <button class="nav-item active" onclick="switchTab('servers', this)">
+          <i class="fas fa-server"></i>
+          <span>Сервера</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('interface', this)">
+          <i class="fas fa-desktop"></i>
+          <span>Інтерфейс</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('settings', this)">
+          <i class="fas fa-sliders-h"></i>
+          <span>Настройки</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function switchTab(tabName, element) {
+      if (element.classList.contains('active')) return;
+
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+
+      document.getElementById('tab-' + tabName).classList.add('active');
+
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      element.classList.add('active');
+    }
+
+    function connectServer(ipAddress) {
+      alert("⚠️ Підключення до: " + ipAddress);
+    }
+  </script>
+
+</body>
+</html>
